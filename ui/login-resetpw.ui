@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>465</width>
+    <height>480</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: white;
+border-radius: 30px;</string>
+  </property>
+  <widget class="QWidget" name="widget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>465</width>
+     <height>480</height>
+    </rect>
+   </property>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>58</x>
+      <y>295</y>
+      <width>311</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel {
+font-family: 'Poppins';
+font-size: 11pt;
+color: #383838;
+qproperty-alignment: 'AlignLeft';
+border: none;
+border-radius: 0;
+background: none;
+}
+</string>
+    </property>
+    <property name="text">
+     <string>Confirm New Password</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="newpw_line">
+    <property name="geometry">
+     <rect>
+      <x>58</x>
+      <y>250</y>
+      <width>345</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-radius: 10px;
+border: 1px solid #383838;
+background: #FFFFF;
+font-family: 'Poppins';
+padding-left: 10px;
+font-size: 11pt;</string>
+    </property>
+    <property name="echoMode">
+     <enum>QLineEdit::Password</enum>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="confirmpw_line">
+    <property name="geometry">
+     <rect>
+      <x>58</x>
+      <y>325</y>
+      <width>345</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-radius: 10px;
+border: 1px solid #383838;
+background: #FFFFF;
+font-family: 'Poppins';
+padding-left: 10px;
+font-size: 11pt;</string>
+    </property>
+    <property name="echoMode">
+     <enum>QLineEdit::Password</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>220</y>
+      <width>151</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel {
+font-family: 'Poppins';
+font-size: 11pt;
+color: #383838;
+qproperty-alignment: 'AlignLeft';
+border: none;
+border-radius: 0;
+background: none;
+}
+</string>
+    </property>
+    <property name="text">
+     <string>New Password</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="resetpw_btn">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>380</y>
+      <width>345</width>
+      <height>39</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+border:none;
+font-family: 'Poppins';
+font-size: 9pt;
+background: none;
+background-color: #3a2f86;
+border-radius: 10px;
+color: white;
+}
+
+QPushButton:hover {
+background-color: #231c53;
+}
+
+
+
+</string>
+    </property>
+    <property name="text">
+     <string>Continue</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="un_line">
+    <property name="geometry">
+     <rect>
+      <x>58</x>
+      <y>175</y>
+      <width>345</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-radius: 10px;
+border: 1px solid #383838;
+background: #FFFFF;
+font-family: 'Poppins';
+padding-left: 10px;
+font-size: 11pt;</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>70</y>
+      <width>461</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border: none;
+color:  #383838;
+font-weight: 800;
+font-family: 'Inter 24pt ExtraBold';
+font-size: 	14pt;
+background: none;
+qproperty-alignment: 'AlignCenter';
+</string>
+    </property>
+    <property name="text">
+     <string>CHANGE / RESET PASSWORD</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>58</x>
+      <y>140</y>
+      <width>151</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel {
+font-family: 'Poppins';
+font-size: 11pt;
+color: #383838;
+qproperty-alignment: 'AlignLeft';
+border: none;
+border-radius: 0;
+background: none;
+}
+</string>
+    </property>
+    <property name="text">
+     <string>Username</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="backtologin_btn">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>425</y>
+      <width>141</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+border:none;
+font-family: 'Helvetica';
+font-size: 9pt;
+background: none;
+color: #3a2f86;
+text-align: left;
+text-align: center;
+}
+
+QPushButton:hover {
+text-decoration: underline;
+}
+
+
+
+</string>
+    </property>
+    <property name="text">
+     <string>&lt; Back to Login</string>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

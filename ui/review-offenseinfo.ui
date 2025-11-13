@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1023</width>
+    <height>900</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QWidget" name="widget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1023</width>
+     <height>900</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: white;</string>
+   </property>
+   <widget class="QWidget" name="widget_2" native="true">
+    <property name="geometry">
+     <rect>
+      <x>102</x>
+      <y>235</y>
+      <width>824</width>
+      <height>540</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border: 1px solid #d1d2d2;
+background: none;</string>
+    </property>
+    <widget class="QLabel" name="label_20">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>824</width>
+       <height>65</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-family: 'Helvetica';
+font-size: 13pt;
+color: white;
+padding-left: 20px;
+background-color: #3a2f86;</string>
+     </property>
+     <property name="text">
+      <string>OFFENSE INFORMATION</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_6">
+     <property name="geometry">
+      <rect>
+       <x>535</x>
+       <y>89</y>
+       <width>171</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-family: 'Poppins';
+font-size: 12pt;
+color: #545454;
+border:none;</string>
+     </property>
+     <property name="text">
+      <string>Case Record No.</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="offensetype_line">
+     <property name="geometry">
+      <rect>
+       <x>27</x>
+       <y>120</y>
+       <width>495</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 1px solid #737373;
+border-radius: 10px;
+padding-left: 10px;
+font-family: 'Poppins';
+font-size: 9pt;</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>27</x>
+       <y>89</y>
+       <width>151</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-family: 'Poppins';
+font-size: 12pt;
+color: #545454;
+border:none;</string>
+     </property>
+     <property name="text">
+      <string>Offense Type</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="caseno_line">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>535</x>
+       <y>120</y>
+       <width>243</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 1px solid #737373;
+border-radius: 10px;
+padding-left: 10px;
+font-family: 'Poppins';
+font-size: 9pt;</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_12">
+     <property name="geometry">
+      <rect>
+       <x>27</x>
+       <y>174</y>
+       <width>221</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-family: 'Poppins';
+font-size: 12pt;
+color: #545454;
+border:none;</string>
+     </property>
+     <property name="text">
+      <string>Date &amp; Time of Incident</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="location_line">
+     <property name="geometry">
+      <rect>
+       <x>285</x>
+       <y>205</y>
+       <width>493</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 1px solid #737373;
+border-radius: 10px;
+padding-left: 10px;
+font-family: 'Poppins';
+font-size: 9pt;</string>
+     </property>
+    </widget>
+    <widget class="QDateTimeEdit" name="datetime_dt">
+     <property name="geometry">
+      <rect>
+       <x>27</x>
+       <y>205</y>
+       <width>243</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 1px solid #737373;
+border-radius: 10px;
+padding-left: 10px;
+font-family: 'Poppins';
+font-size: 9pt;</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_25">
+     <property name="geometry">
+      <rect>
+       <x>285</x>
+       <y>174</y>
+       <width>101</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-family: 'Poppins';
+font-size: 12pt;
+color: #545454;
+border:none;</string>
+     </property>
+     <property name="text">
+      <string>Location</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_27">
+     <property name="geometry">
+      <rect>
+       <x>27</x>
+       <y>260</y>
+       <width>331</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-family: 'Poppins';
+font-size: 12pt;
+color: #545454;
+border:none;</string>
+     </property>
+     <property name="text">
+      <string>Description of Incident</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="desc_text">
+     <property name="geometry">
+      <rect>
+       <x>27</x>
+       <y>291</y>
+       <width>749</width>
+       <height>121</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 1px solid #737373;
+border-radius: 10px;
+padding-left: 10px;
+font-family: 'Poppins';
+font-size: 9pt;</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_56">
+     <property name="geometry">
+      <rect>
+       <x>27</x>
+       <y>430</y>
+       <width>351</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-family: 'Poppins';
+font-size: 12pt;
+color: #545454;
+border:none;</string>
+     </property>
+     <property name="text">
+      <string>Complainant</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="officer_line">
+     <property name="geometry">
+      <rect>
+       <x>425</x>
+       <y>461</y>
+       <width>352</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 1px solid #737373;
+border-radius: 10px;
+padding-left: 10px;
+font-family: 'Poppins';
+font-size: 9pt;</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_58">
+     <property name="geometry">
+      <rect>
+       <x>425</x>
+       <y>430</y>
+       <width>351</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-family: 'Poppins';
+font-size: 12pt;
+color: #545454;
+border:none;</string>
+     </property>
+     <property name="text">
+      <string>Barangay Officer in Charge</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="complainant_line">
+     <property name="geometry">
+      <rect>
+       <x>27</x>
+       <y>461</y>
+       <width>388</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 1px solid #737373;
+border-radius: 10px;
+padding-left: 10px;
+font-family: 'Poppins';
+font-size: 9pt;</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QLabel" name="label_62">
+    <property name="geometry">
+     <rect>
+      <x>102</x>
+      <y>790</y>
+      <width>551</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font-family: 'Helvetica';
+font-size: 10pt;
+color: #545454;
+font-style: italic;</string>
+    </property>
+    <property name="text">
+     <string>Review the information provided before submission.</string>
+    </property>
+   </widget>
+   <widget class="Line" name="line_4">
+    <property name="geometry">
+     <rect>
+      <x>102</x>
+      <y>182</y>
+      <width>824</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="lineWidth">
+     <number>2</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_16">
+    <property name="geometry">
+     <rect>
+      <x>102</x>
+      <y>115</y>
+      <width>541</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: none;
+font-family: 'Helvetica';
+font-size: 30pt;
+color: #545454;</string>
+    </property>
+    <property name="text">
+     <string>Review Information</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="cancelbtn">
+    <property name="geometry">
+     <rect>
+      <x>715</x>
+      <y>790</y>
+      <width>71</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+background: none;
+border: none;
+font-family: 'Helvetica';
+font-size: 11pt;
+color: #383838;
+text-align: right;
+}
+
+QPushButton:hover {
+text-decoration: underline;
+}
+</string>
+    </property>
+    <property name="text">
+     <string>Cancel</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="next_button">
+    <property name="geometry">
+     <rect>
+      <x>882</x>
+      <y>790</y>
+      <width>41</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+background: none;
+border: none;
+font-family: 'Helvetica';
+font-size: 11pt;
+color: #383838;
+text-align: right;
+}
+
+QPushButton:hover {
+text-decoration: underline;
+}
+</string>
+    </property>
+    <property name="text">
+     <string>Next</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="prevbtn">
+    <property name="geometry">
+     <rect>
+      <x>800</x>
+      <y>790</y>
+      <width>71</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+background: none;
+border: none;
+font-family: 'Helvetica';
+font-size: 11pt;
+color: #383838;
+text-align: right;
+}
+
+QPushButton:hover {
+text-decoration: underline;
+}
+</string>
+    </property>
+    <property name="text">
+     <string>Previous</string>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

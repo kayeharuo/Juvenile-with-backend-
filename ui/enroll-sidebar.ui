@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>sidebarwidget</class>
+ <widget class="QWidget" name="sidebarwidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>417</width>
+    <height>900</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: #ae0b08;
+border: none;</string>
+  </property>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>64</y>
+     <width>215</width>
+     <height>215</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background: none;
+border: none;</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="pixmap">
+    <pixmap>../icons/brngy logo no stroke.png</pixmap>
+   </property>
+   <property name="scaledContents">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>270</y>
+     <width>417</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel {
+color: white;
+font-family: 'Poppins';
+font-size: 13pt;
+qproperty-alignment: 'AlignCenter';
+background-color: none;
+}</string>
+   </property>
+   <property name="text">
+    <string>REPUBLIKA NG PILIPINAS</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>310</y>
+     <width>417</width>
+     <height>81</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel {
+color: white;
+font-family: 'Inter 24pt ExtraBold';
+font-size: 28pt;
+font-weight:bold;
+qproperty-alignment: 'AlignCenter';
+background-color: none;
+line-height: 10px;
+}</string>
+   </property>
+   <property name="text">
+    <string>BARANGAY</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>365</y>
+     <width>417</width>
+     <height>81</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel {
+color: white;
+font-family: 'Inter 24pt ExtraBold';
+font-size: 28pt;
+font-weight:bold;
+qproperty-alignment: 'AlignCenter';
+background-color: none;
+line-height: 10px;
+}</string>
+   </property>
+   <property name="text">
+    <string>POBLACION</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>420</y>
+     <width>417</width>
+     <height>81</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel {
+color: white;
+font-family: 'Inter 24pt ExtraBold';
+font-size: 28pt;
+font-weight:bold;
+qproperty-alignment: 'AlignCenter';
+background-color: none;
+line-height: 10px;
+}</string>
+   </property>
+   <property name="text">
+    <string>PARDO</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_6">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>495</y>
+     <width>417</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel {
+color: white;
+font-family: 'Poppins';
+font-size: 11.5pt;
+qproperty-alignment: 'AlignCenter';
+background-color: none;
+}</string>
+   </property>
+   <property name="text">
+    <string>M Dacalos St., Poblacion</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_7">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>525</y>
+     <width>417</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel {
+color: white;
+font-family: 'Poppins';
+font-size: 11.5pt;
+qproperty-alignment: 'AlignCenter';
+background-color: none;
+}</string>
+   </property>
+   <property name="text">
+    <string>Pardo, Cebu City, Philippines</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

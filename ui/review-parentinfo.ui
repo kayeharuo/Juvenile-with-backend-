@@ -1,0 +1,611 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1023</width>
+    <height>900</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QWidget" name="widget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1023</width>
+     <height>900</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: white;</string>
+   </property>
+   <widget class="QWidget" name="widget_2" native="true">
+    <property name="geometry">
+     <rect>
+      <x>102</x>
+      <y>235</y>
+      <width>824</width>
+      <height>540</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border: 1px solid #d1d2d2;
+background: none;</string>
+    </property>
+    <widget class="QLabel" name="label_20">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>824</width>
+       <height>65</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-family: 'Helvetica';
+font-size: 13pt;
+color: white;
+padding-left: 20px;
+background-color: #3a2f86;</string>
+     </property>
+     <property name="text">
+      <string>PARENT OR GUARDIAN INFORMATION</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_10">
+     <property name="geometry">
+      <rect>
+       <x>27</x>
+       <y>89</y>
+       <width>151</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-family: 'Poppins';
+font-size: 12pt;
+color: #545454;
+border: none;</string>
+     </property>
+     <property name="text">
+      <string>Full Name</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="fullname_line">
+     <property name="geometry">
+      <rect>
+       <x>27</x>
+       <y>120</y>
+       <width>749</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 1px solid #737373;
+border-radius: 10px;
+padding-left: 10px;
+font-family: 'Poppins';
+font-size: 9pt;</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="sex_combo">
+     <property name="geometry">
+      <rect>
+       <x>285</x>
+       <y>205</y>
+       <width>167</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 1px solid #737373;
+border-radius: 10px;
+padding-left: 10px;
+font-family: 'Poppins';
+font-size: 9pt;</string>
+     </property>
+     <item>
+      <property name="text">
+       <string>Male</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Female</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QLineEdit" name="age_line">
+     <property name="geometry">
+      <rect>
+       <x>670</x>
+       <y>205</y>
+       <width>105</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 1px solid #737373;
+border-radius: 10px;
+padding-left: 10px;
+font-family: 'Poppins';
+font-size: 9pt;</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="rs_line">
+     <property name="geometry">
+      <rect>
+       <x>27</x>
+       <y>205</y>
+       <width>243</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 1px solid #737373;
+border-radius: 10px;
+padding-left: 10px;
+font-family: 'Poppins';
+font-size: 9pt;</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_34">
+     <property name="geometry">
+      <rect>
+       <x>465</x>
+       <y>174</y>
+       <width>151</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-family: 'Poppins';
+font-size: 12pt;
+color: #545454;
+border: none;</string>
+     </property>
+     <property name="text">
+      <string>Date of Birth</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_15">
+     <property name="geometry">
+      <rect>
+       <x>27</x>
+       <y>174</y>
+       <width>221</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-family: 'Poppins';
+font-size: 12pt;
+color: #545454;
+border: none;</string>
+     </property>
+     <property name="text">
+      <string>Relationship to Juvenile</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_19">
+     <property name="geometry">
+      <rect>
+       <x>285</x>
+       <y>174</y>
+       <width>131</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-family: 'Poppins';
+font-size: 12pt;
+color: #545454;
+border: none;
+</string>
+     </property>
+     <property name="text">
+      <string>Sex</string>
+     </property>
+    </widget>
+    <widget class="QDateEdit" name="dob_date">
+     <property name="geometry">
+      <rect>
+       <x>465</x>
+       <y>205</y>
+       <width>189</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 1px solid #737373;
+border-radius: 10px;
+padding-left: 10px;
+font-family: 'Poppins';
+font-size: 9pt;</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_33">
+     <property name="geometry">
+      <rect>
+       <x>670</x>
+       <y>174</y>
+       <width>101</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-family: 'Poppins';
+font-size: 12pt;
+color: #545454;
+border: none;</string>
+     </property>
+     <property name="text">
+      <string>Age</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="citizenship_line">
+     <property name="geometry">
+      <rect>
+       <x>278</x>
+       <y>291</y>
+       <width>245</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 1px solid #737373;
+border-radius: 10px;
+padding-left: 10px;
+font-family: 'Poppins';
+font-size: 9pt;</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_56">
+     <property name="geometry">
+      <rect>
+       <x>538</x>
+       <y>260</y>
+       <width>181</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-family: 'Poppins';
+font-size: 12pt;
+color: #545454;
+border: none;</string>
+     </property>
+     <property name="text">
+      <string>Occupation</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_35">
+     <property name="geometry">
+      <rect>
+       <x>27</x>
+       <y>260</y>
+       <width>230</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-family: 'Poppins';
+font-size: 12pt;
+color: #545454;
+border: none;</string>
+     </property>
+     <property name="text">
+      <string>Civil Status</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_46">
+     <property name="geometry">
+      <rect>
+       <x>278</x>
+       <y>260</y>
+       <width>181</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-family: 'Poppins';
+font-size: 12pt;
+color: #545454;
+border: none;</string>
+     </property>
+     <property name="text">
+      <string>Citizenship</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="occu_line">
+     <property name="geometry">
+      <rect>
+       <x>538</x>
+       <y>291</y>
+       <width>240</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 1px solid #737373;
+border-radius: 10px;
+padding-left: 10px;
+font-family: 'Poppins';
+font-size: 9pt;</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="civilsts_line">
+     <property name="geometry">
+      <rect>
+       <x>27</x>
+       <y>291</y>
+       <width>236</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 1px solid #737373;
+border-radius: 10px;
+padding-left: 10px;
+font-family: 'Poppins';
+font-size: 9pt;</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="email_line">
+     <property name="geometry">
+      <rect>
+       <x>27</x>
+       <y>376</y>
+       <width>450</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 1px solid #737373;
+border-radius: 10px;
+padding-left: 10px;
+font-family: 'Poppins';
+font-size: 9pt;</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="contact_line">
+     <property name="geometry">
+      <rect>
+       <x>490</x>
+       <y>376</y>
+       <width>285</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 1px solid #737373;
+border-radius: 10px;
+padding-left: 10px;
+font-family: 'Poppins';
+font-size: 9pt;</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_47">
+     <property name="geometry">
+      <rect>
+       <x>27</x>
+       <y>345</y>
+       <width>251</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-family: 'Poppins';
+font-size: 12pt;
+color: #545454;
+border: none;</string>
+     </property>
+     <property name="text">
+      <string>Email Address</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_49">
+     <property name="geometry">
+      <rect>
+       <x>490</x>
+       <y>345</y>
+       <width>211</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-family: 'Poppins';
+font-size: 12pt;
+color: #545454;
+border: none;</string>
+     </property>
+     <property name="text">
+      <string>Contact No.</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_60">
+     <property name="geometry">
+      <rect>
+       <x>27</x>
+       <y>430</y>
+       <width>441</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-family: 'Poppins';
+font-size: 12pt;
+color: #545454;
+border: none;</string>
+     </property>
+     <property name="text">
+      <string>Residential Address</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="address_line">
+     <property name="geometry">
+      <rect>
+       <x>27</x>
+       <y>461</y>
+       <width>749</width>
+       <height>36</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: 1px solid #737373;
+border-radius: 10px;
+padding-left: 10px;
+font-family: 'Poppins';
+font-size: 9pt;</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QLabel" name="label_62">
+    <property name="geometry">
+     <rect>
+      <x>102</x>
+      <y>790</y>
+      <width>551</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font-family: 'Helvetica';
+font-size: 10pt;
+color: #545454;
+font-style: italic;</string>
+    </property>
+    <property name="text">
+     <string>Review the information provided before submission.</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="next_button">
+    <property name="geometry">
+     <rect>
+      <x>882</x>
+      <y>790</y>
+      <width>41</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+background: none;
+border: none;
+font-family: 'Helvetica';
+font-size: 11pt;
+color: #383838;
+text-align: right;
+}
+
+QPushButton:hover {
+text-decoration: underline;
+}
+</string>
+    </property>
+    <property name="text">
+     <string>Next</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="cancel_btn">
+    <property name="geometry">
+     <rect>
+      <x>715</x>
+      <y>790</y>
+      <width>71</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+background: none;
+border: none;
+font-family: 'Helvetica';
+font-size: 11pt;
+color: #383838;
+text-align: right;
+}
+
+QPushButton:hover {
+text-decoration: underline;
+}
+</string>
+    </property>
+    <property name="text">
+     <string>Cancel</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="previous_btn">
+    <property name="geometry">
+     <rect>
+      <x>800</x>
+      <y>790</y>
+      <width>71</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+background: none;
+border: none;
+font-family: 'Helvetica';
+font-size: 11pt;
+color: #383838;
+text-align: right;
+}
+
+QPushButton:hover {
+text-decoration: underline;
+}
+</string>
+    </property>
+    <property name="text">
+     <string>Previous</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QLabel" name="label_16">
+   <property name="geometry">
+    <rect>
+     <x>102</x>
+     <y>115</y>
+     <width>541</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: none;
+font-family: 'Helvetica';
+font-size: 30pt;
+color: #545454;</string>
+   </property>
+   <property name="text">
+    <string>Review Information</string>
+   </property>
+  </widget>
+  <widget class="Line" name="line_4">
+   <property name="geometry">
+    <rect>
+     <x>102</x>
+     <y>182</y>
+     <width>824</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="lineWidth">
+    <number>2</number>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

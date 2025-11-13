@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>465</width>
+    <height>480</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>465</width>
+    <height>480</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>465</width>
+    <height>480</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background: white;
+border-radius: 30px;</string>
+  </property>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>70</y>
+     <width>461</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border: none;
+color:  #383838;
+font-weight: 800;
+font-family: 'Inter 24pt ExtraBold';
+font-size: 	14pt;
+background: none;
+qproperty-alignment: 'AlignCenter';
+
+</string>
+   </property>
+   <property name="text">
+    <string>LOGIN TO YOUR ACCOUNT</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>128</y>
+     <width>461</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel {
+font-family: 'Poppins';
+font-size: 9.5pt;
+color: #383838;
+qproperty-alignment: 'AlignCenter';
+border: none;
+border-radius: 0;
+background: none;
+}</string>
+   </property>
+   <property name="text">
+    <string>Please enter your login details</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>58</x>
+     <y>170</y>
+     <width>151</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel {
+font-family: 'Poppins';
+font-size: 11pt;
+color: #383838;
+qproperty-alignment: 'AlignLeft';
+border: none;
+border-radius: 0;
+background: none;
+}
+</string>
+   </property>
+   <property name="text">
+    <string>Username</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="un_line">
+   <property name="geometry">
+    <rect>
+     <x>58</x>
+     <y>205</y>
+     <width>345</width>
+     <height>44</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-radius: 10px;
+border: 1px solid #383838;
+background: #FFFFF;
+font-family: 'Poppins';
+padding-left: 10px;
+font-size: 11pt;</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>58</x>
+     <y>265</y>
+     <width>151</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel {
+font-family: 'Poppins';
+font-size: 11pt;
+color: #383838;
+qproperty-alignment: 'AlignLeft';
+border: none;
+border-radius: 0;
+background: none;
+}
+</string>
+   </property>
+   <property name="text">
+    <string>Password</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="pw_line">
+   <property name="geometry">
+    <rect>
+     <x>58</x>
+     <y>300</y>
+     <width>345</width>
+     <height>44</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-radius: 10px;
+border: 1px solid #383838;
+background: #FFFFF;
+font-family: 'Poppins';
+padding-left: 10px;
+font-size: 11pt;</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="forgotpw_btn">
+   <property name="geometry">
+    <rect>
+     <x>58</x>
+     <y>353</y>
+     <width>141</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+border:none;
+font-family: 'Helvetica';
+font-size: 9pt;
+background: none;
+font-style: italic;
+color: #545454;
+text-align: left;
+}
+
+QPushButton:hover {
+text-decoration: underline;
+}
+
+
+
+</string>
+   </property>
+   <property name="text">
+    <string>Forgot Password?</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="login_btn">
+   <property name="geometry">
+    <rect>
+     <x>58</x>
+     <y>395</y>
+     <width>170</width>
+     <height>39</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+border:none;
+font-family: 'Poppins';
+font-size: 9pt;
+background: none;
+background-color: #3a2f86;
+border-radius: 10px;
+color: white;
+}
+
+QPushButton:hover {
+background-color: #231c53;
+}
+
+
+
+</string>
+   </property>
+   <property name="text">
+    <string>Log In</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="createacc_btn">
+   <property name="geometry">
+    <rect>
+     <x>235</x>
+     <y>395</y>
+     <width>170</width>
+     <height>39</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+border:none;
+font-family: 'Poppins';
+font-size: 9pt;
+background: none;
+background-color: #e62129;
+border-radius: 10px;
+color: white;
+}
+
+QPushButton:hover {
+background-color: #a3282d;
+}
+
+
+
+</string>
+   </property>
+   <property name="text">
+    <string>Create Account</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
