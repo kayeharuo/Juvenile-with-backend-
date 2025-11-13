@@ -5,7 +5,7 @@ from PyQt5.QtCore import QEvent, pyqtSignal, Qt, QDate
 from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtWidgets import (QWidget, QApplication, QComboBox, QLineEdit, QMessageBox, QPushButton, QLabel,
                              QDialogButtonBox, QDialog, QStyle, QMainWindow, QStackedWidget, QListWidget, QHBoxLayout,
-                             QListWidgetItem, QTableWidget, QDateEdit)
+                             QListWidgetItem, QTableWidget, QTableWidgetItem, QDateEdit)
 from Db_connection import get_db_connection
 import LoggedUser
 from LoginMain import LogIn
@@ -39,6 +39,9 @@ class DbMenuWindow(QMainWindow):
         self.case_personalinfo = CasePersonalInfo()
         self.case_personalinfo.switch_to_parentinfo.connect(self.case_parentpage)
         self.case_personalinfo.close_page.connect(self.records_page)
+        
+        # Store selected case number
+        self.selected_case_no = None
 
         self.case_parentinfo = CaseParentInfo()
         self.case_parentinfo.switch_to_offense.connect(self.case_offensepage)
@@ -68,6 +71,10 @@ class DbMenuWindow(QMainWindow):
         self.stacked_widget.setCurrentWidget(self.dbmenu)
 
     def records_page(self):
+        self.records.load_records_from_db()  # Load records from database
+        # Clear the search box when returning to records page
+        if self.records.search_line:
+            self.records.search_line.clear()
         self.stacked_widget.setCurrentWidget(self.records)
 
     def dbmenu_page(self):
@@ -84,15 +91,23 @@ class DbMenuWindow(QMainWindow):
         self.stacked_widget.setCurrentWidget(self.editsettings)
 
     def case_personalpage(self):
+        if self.selected_case_no:
+            self.case_personalinfo.load_case_data(self.selected_case_no)
         self.stacked_widget.setCurrentWidget(self.case_personalinfo)
 
     def case_parentpage(self):
+        if self.selected_case_no:
+            self.case_parentinfo.load_case_data(self.selected_case_no)
         self.stacked_widget.setCurrentWidget(self.case_parentinfo)
 
     def case_offensepage(self):
+        if self.selected_case_no:
+            self.case_offenseinfo.load_case_data(self.selected_case_no)
         self.stacked_widget.setCurrentWidget(self.case_offenseinfo)
 
     def case_historypage(self):
+        if self.selected_case_no:
+            self.case_crimehistory.load_case_data(self.selected_case_no)
         self.stacked_widget.setCurrentWidget(self.case_crimehistory)
 
     #helper method to show the record page after user submits or enroll a new profile
@@ -650,18 +665,193 @@ class DashboardRecords(QWidget):
         #find the list widget
         self.list_widget = self.record_widget.findChild(QListWidget, "listWidget")
 
-        #add sample data only
-        self.add_record("Alonte, Angela Marie", "10-0001", "September 10, 2021")
-        self.add_record("Bautista, Herbert", "10-0002", "September 11, 2021")
+        # Find the search field
+        self.search_line = self.record_widget.findChild(QLineEdit, "search_line")
+        if self.search_line:
+            self.search_line.textChanged.connect(self.filter_records)
+
+        # Store all records for filtering and sorting
+        self.all_records = []
+        self.sort_column = None
+        self.sort_ascending = True
+
+        # Add sorting arrow buttons next to headers
+        self.add_sort_buttons()
+
+        # Load records from database
+        self.load_records_from_db()
 
         #back to menu button
         self.backmenu_btn = self.record_widget.findChild(QPushButton, "back_btn")
         if self.backmenu_btn:
             self.backmenu_btn.clicked.connect(self.go_to_dbmenu)
 
+    def add_sort_buttons(self):
+        """Add small arrow buttons next to existing headers for sorting"""
+        # Name sort button (positioned right after "NAME" text)
+        self.name_sort_btn = QPushButton("▲▼", self.record_widget)
+        self.name_sort_btn.setGeometry(155, 235, 25, 21)
+        self.name_sort_btn.setStyleSheet("""
+            QPushButton {
+                background: none;
+                border: none;
+                font-family: 'Poppins';
+                font-size: 8pt;
+                color: #383838;
+                padding: 0px;
+            }
+            QPushButton:hover {
+                color: #2a1a5e;
+                font-weight: bold;
+            }
+        """)
+        self.name_sort_btn.clicked.connect(lambda: self.sort_records('name'))
+        self.name_sort_btn.setCursor(Qt.PointingHandCursor)
+
+        # Case No sort button (positioned right after "CASE NO." text)
+        self.case_sort_btn = QPushButton("▲▼", self.record_widget)
+        self.case_sort_btn.setGeometry(628, 235, 25, 21)
+        self.case_sort_btn.setStyleSheet("""
+            QPushButton {
+                background: none;
+                border: none;
+                font-family: 'Poppins';
+                font-size: 8pt;
+                color: #383838;
+                padding: 0px;
+            }
+            QPushButton:hover {
+                color: #2a1a5e;
+                font-weight: bold;
+            }
+        """)
+        self.case_sort_btn.clicked.connect(lambda: self.sort_records('case_no'))
+        self.case_sort_btn.setCursor(Qt.PointingHandCursor)
+
+        # Date sort button (positioned right after "DATE OF INCIDENT" text)
+        self.date_sort_btn = QPushButton("▲▼", self.record_widget)
+        self.date_sort_btn.setGeometry(868, 235, 25, 21)
+        self.date_sort_btn.setStyleSheet("""
+            QPushButton {
+                background: none;
+                border: none;
+                font-family: 'Poppins';
+                font-size: 8pt;
+                color: #383838;
+                padding: 0px;
+            }
+            QPushButton:hover {
+                color: #2a1a5e;
+                font-weight: bold;
+            }
+        """)
+        self.date_sort_btn.clicked.connect(lambda: self.sort_records('date'))
+        self.date_sort_btn.setCursor(Qt.PointingHandCursor)
+
+    def sort_records(self, column):
+        """Sort records by the specified column"""
+        # Toggle sort direction if clicking the same column
+        if self.sort_column == column:
+            self.sort_ascending = not self.sort_ascending
+        else:
+            self.sort_column = column
+            self.sort_ascending = True
+
+        # Sort the records
+        if column == 'name':
+            self.all_records.sort(key=lambda x: x['name'].lower(), reverse=not self.sort_ascending)
+        elif column == 'case_no':
+            self.all_records.sort(key=lambda x: x['case_no'], reverse=not self.sort_ascending)
+        elif column == 'date':
+            # Sort by date_sort field for accurate date sorting
+            self.all_records.sort(key=lambda x: (x.get('date_sort') is None, x.get('date_sort')), reverse=not self.sort_ascending)
+
+        # Redisplay all records with current filter
+        self.filter_records()
+
     #back to dashboard menu
     def go_to_dbmenu(self):
         self.switch_to_dbmenu.emit()
+
+    def load_records_from_db(self):
+        """Load all juvenile records from the database"""
+        try:
+            # Clear existing items
+            self.list_widget.clear()
+            self.all_records = []
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            # Query to get juvenile records with their offense information
+            cursor.execute("""
+                SELECT 
+                    jp.juv_lname, 
+                    jp.juv_fname, 
+                    jp.juv_mname,
+                    oi.offns_case_record_no,
+                    oi.offns_date_time
+                FROM juvenile_profile jp
+                LEFT JOIN offense_information oi ON jp.juv_id = oi.juv_id
+                ORDER BY oi.offns_date_time DESC
+            """)
+
+            records = cursor.fetchall()
+            cursor.close()
+            conn.close()
+
+            # Store and display records
+            for record in records:
+                lname, fname, mname, case_no, offense_date = record
+                
+                # Format name
+                full_name = f"{lname}, {fname}"
+                if mname:
+                    full_name += f" {mname}"
+                
+                # Format date
+                if offense_date:
+                    formatted_date = offense_date.strftime("%B %d, %Y")
+                    date_sort = offense_date
+                else:
+                    formatted_date = "No date"
+                    date_sort = None
+                
+                # Store record data
+                self.all_records.append({
+                    'name': full_name,
+                    'case_no': case_no or "N/A",
+                    'date': formatted_date,
+                    'date_sort': date_sort
+                })
+                
+                # Add to list
+                self.add_record(full_name, case_no or "N/A", formatted_date)
+
+        except Exception as e:
+            print(f"Error loading records from database: {e}")  
+            # Show error message to user
+            QMessageBox.critical(self, "Database Error", f"Failed to load records: {str(e)}")
+
+    def filter_records(self):
+        """Filter records based on search text"""
+        search_text = self.search_line.text().lower().strip()
+        
+        # Clear the list
+        self.list_widget.clear()
+        
+        # If search is empty, show all records
+        if not search_text:
+            for record in self.all_records:
+                self.add_record(record['name'], record['case_no'], record['date'])
+            return
+        
+        # Filter and display matching records
+        for record in self.all_records:
+            # Search in name or case number
+            if (search_text in record['name'].lower() or 
+                search_text in record['case_no'].lower()):
+                self.add_record(record['name'], record['case_no'], record['date'])
 
     #add record or row data to the list widget
     def add_record(self, name, case_no, date):
@@ -719,6 +909,10 @@ class DashboardRecords(QWidget):
 
     def open_record(self, case_no):
         print(f"Opening record {case_no}")
+        # Store the case number in the parent window
+        parent_window = self.window()
+        if hasattr(parent_window, 'selected_case_no'):
+            parent_window.selected_case_no = case_no
         self.switch_to_specificfile.emit()
 
     def load_fonts(self):
@@ -761,6 +955,30 @@ class CasePersonalInfo(QWidget):
         uic.loadUi("ui/casefile-personalinfo.ui", self.personal_widget)
         self.personal_widget.move(417, 0)
 
+        # Find all the labels for displaying data
+        self.casenum_label = self.personal_widget.findChild(QLabel, "casenum_label")
+        self.fullname_label = self.personal_widget.findChild(QLabel, "fullname")
+        self.dob_label = self.personal_widget.findChild(QLabel, "dob")
+        self.age_label = self.personal_widget.findChild(QLabel, "age")
+        self.sex_label = self.personal_widget.findChild(QLabel, "sex")
+        self.gender_label = self.personal_widget.findChild(QLabel, "gender")
+        self.citizenship_label = self.personal_widget.findChild(QLabel, "citizenship")
+        self.birthplace_label = self.personal_widget.findChild(QLabel, "birthplace")
+        self.homeaddress_label = self.personal_widget.findChild(QLabel, "homeaddress")
+        
+        # Create image label for facial photo
+        self.photo_label = QLabel(self.personal_widget)
+        self.photo_label.setGeometry(775, 70, 150, 150)
+        self.photo_label.setStyleSheet("""
+            QLabel {
+                border: 2px solid #3E2780;
+                border-radius: 10px;
+                background-color: #f0f0f0;
+            }
+        """)
+        self.photo_label.setScaledContents(True)
+        self.photo_label.setAlignment(Qt.AlignCenter)
+
         # next button
         self.next_btn = self.personal_widget.findChild(QPushButton, "next_button")
         if self.next_btn:
@@ -770,6 +988,98 @@ class CasePersonalInfo(QWidget):
         self.close_btn = self.personal_widget.findChild(QPushButton, "close_btn")
         if self.close_btn:
             self.close_btn.clicked.connect(self.go_to_recordlist)
+            
+        # Store current case number
+        self.current_case_no = None
+
+    def load_case_data(self, case_no):
+        """Load juvenile data from database based on case number"""
+        self.current_case_no = case_no
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            # Query to get juvenile personal information and facial image
+            cursor.execute("""
+                SELECT 
+                    jp.juv_lname, 
+                    jp.juv_fname, 
+                    jp.juv_mname,
+                    jp.juv_suffix,
+                    jp.juv_dob,
+                    jp.juv_age,
+                    jp.juv_sex,
+                    jp.juv_gender,
+                    jp.juv_citizenship,
+                    jp.juv_place_of_birth,
+                    jp.juv_state_province,
+                    jp.juv_municipality,
+                    jp.juv_barangay,
+                    jp.juv_street,
+                    oi.offns_case_record_no,
+                    fd.face_image
+                FROM juvenile_profile jp
+                LEFT JOIN offense_information oi ON jp.juv_id = oi.juv_id
+                LEFT JOIN facial_data fd ON jp.juv_id = fd.juv_id
+                WHERE oi.offns_case_record_no = %s
+            """, (case_no,))
+
+            result = cursor.fetchone()
+            cursor.close()
+            conn.close()
+
+            if result:
+                lname, fname, mname, suffix, dob, age, sex, gender, citizenship, birthplace, state, municipal, brgy, street, case_num, face_image = result
+                
+                # Format full name
+                full_name = f"{fname}"
+                if mname:
+                    full_name += f" {mname}"
+                full_name += f" {lname}"
+                if suffix:
+                    full_name += f" {suffix}"
+                
+                # Format address
+                address_parts = [street, brgy, municipal, state]
+                home_address = ", ".join([part for part in address_parts if part])
+                
+                # Format date of birth
+                dob_formatted = dob.strftime("%B %d, %Y") if dob else "N/A"
+                
+                # Update labels
+                if self.casenum_label:
+                    self.casenum_label.setText(f"Case No. {case_num or 'N/A'}")
+                if self.fullname_label:
+                    self.fullname_label.setText(full_name)
+                if self.dob_label:
+                    self.dob_label.setText(dob_formatted)
+                if self.age_label:
+                    self.age_label.setText(str(age) if age else "N/A")
+                if self.sex_label:
+                    self.sex_label.setText(sex or "N/A")
+                if self.gender_label:
+                    self.gender_label.setText(gender or "N/A")
+                if self.citizenship_label:
+                    self.citizenship_label.setText(citizenship or "N/A")
+                if self.birthplace_label:
+                    self.birthplace_label.setText(birthplace or "N/A")
+                if self.homeaddress_label:
+                    self.homeaddress_label.setText(home_address or "N/A")
+                
+                # Display facial image
+                if face_image and self.photo_label:
+                    from PyQt5.QtGui import QPixmap
+                    pixmap = QPixmap()
+                    pixmap.loadFromData(face_image)
+                    self.photo_label.setPixmap(pixmap)
+                elif self.photo_label:
+                    self.photo_label.setText("No Photo")
+            else:
+                QMessageBox.warning(self, "Error", "Case record not found.")
+
+        except Exception as e:
+            print(f"Error loading case data: {e}")
+            QMessageBox.critical(self, "Database Error", f"Failed to load case data: {str(e)}")
 
     def go_to_parentinfo(self):
         self.switch_to_parentinfo.emit()
@@ -813,10 +1123,37 @@ class CaseParentInfo(QWidget):
         uic.loadUi("ui/enroll-sidebar.ui", self.sidebar_widget)
         self.sidebar_widget.move(0, 0)
 
-        #add the offense info widget
+        #add the parent info widget
         self.parent_widget = QWidget(self)
         uic.loadUi("ui/casefile-parentinfo.ui", self.parent_widget)
         self.parent_widget.move(417, 0)
+
+        # Find all labels
+        self.casenum_label = self.parent_widget.findChild(QLabel, "casenum_label")
+        self.parentname_label = self.parent_widget.findChild(QLabel, "parentname")
+        self.relationshp_label = self.parent_widget.findChild(QLabel, "relationshp")
+        self.birthdate_label = self.parent_widget.findChild(QLabel, "birthdate")
+        self.age_label = self.parent_widget.findChild(QLabel, "age")
+        self.sex_label = self.parent_widget.findChild(QLabel, "sex")
+        self.citizenship_label = self.parent_widget.findChild(QLabel, "citizenship")
+        self.civilstatus_label = self.parent_widget.findChild(QLabel, "civilstatus")
+        self.occupation_label = self.parent_widget.findChild(QLabel, "occupation")
+        self.contactnum_label = self.parent_widget.findChild(QLabel, "contactnum")
+        self.email_label = self.parent_widget.findChild(QLabel, "email")
+        self.address_label = self.parent_widget.findChild(QLabel, "address")
+        
+        # Create image label for facial photo
+        self.photo_label = QLabel(self.parent_widget)
+        self.photo_label.setGeometry(775, 70, 150, 150)
+        self.photo_label.setStyleSheet("""
+            QLabel {
+                border: 2px solid #3E2780;
+                border-radius: 10px;
+                background-color: #f0f0f0;
+            }
+        """)
+        self.photo_label.setScaledContents(True)
+        self.photo_label.setAlignment(Qt.AlignCenter)
 
         # next button
         self.next_btn = self.parent_widget.findChild(QPushButton, "next_button")
@@ -832,6 +1169,86 @@ class CaseParentInfo(QWidget):
         self.close_btn = self.parent_widget.findChild(QPushButton, "close_btn")
         if self.close_btn:
             self.close_btn.clicked.connect(self.go_to_recordlist)
+            
+        self.current_case_no = None
+
+    def load_case_data(self, case_no):
+        """Load guardian data from database based on case number"""
+        self.current_case_no = case_no
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                SELECT 
+                    jgp.grdn_full_name,
+                    jgp.grdn_juv_relationship,
+                    jgp.grdn_dob,
+                    jgp.grdn_age,
+                    jgp.grdn_sex,
+                    jgp.grdn_citizenship,
+                    jgp.grdn_civil_status,
+                    jgp.grdn_occupation,
+                    jgp.grdn_contact_no,
+                    jgp.grdn_email_address,
+                    jgp.grdn_residential_address,
+                    oi.offns_case_record_no,
+                    fd.face_image
+                FROM juvenile_guardian_profile jgp
+                JOIN juvenile_profile jp ON jgp.juv_id = jp.juv_id
+                LEFT JOIN offense_information oi ON jp.juv_id = oi.juv_id
+                LEFT JOIN facial_data fd ON jp.juv_id = fd.juv_id
+                WHERE oi.offns_case_record_no = %s
+            """, (case_no,))
+
+            result = cursor.fetchone()
+            cursor.close()
+            conn.close()
+
+            if result:
+                fullname, relationship, dob, age, sex, citizenship, civil_status, occupation, contact, email, address, case_num, face_image = result
+                
+                dob_formatted = dob.strftime("%B %d, %Y") if dob else "N/A"
+                
+                if self.casenum_label:
+                    self.casenum_label.setText(f"Case No. {case_num or 'N/A'}")
+                if self.parentname_label:
+                    self.parentname_label.setText(fullname or "N/A")
+                if self.relationshp_label:
+                    self.relationshp_label.setText(relationship or "N/A")
+                if self.birthdate_label:
+                    self.birthdate_label.setText(dob_formatted)
+                if self.age_label:
+                    self.age_label.setText(str(age) if age else "N/A")
+                if self.sex_label:
+                    self.sex_label.setText(sex or "N/A")
+                if self.citizenship_label:
+                    self.citizenship_label.setText(citizenship or "N/A")
+                if self.civilstatus_label:
+                    self.civilstatus_label.setText(civil_status or "N/A")
+                if self.occupation_label:
+                    self.occupation_label.setText(occupation or "N/A")
+                if self.contactnum_label:
+                    self.contactnum_label.setText(contact or "N/A")
+                if self.email_label:
+                    self.email_label.setText(email or "N/A")
+                if self.address_label:
+                    self.address_label.setText(address or "N/A")
+                
+                # Display facial image
+                if face_image and self.photo_label:
+                    from PyQt5.QtGui import QPixmap
+                    pixmap = QPixmap()
+                    pixmap.loadFromData(face_image)
+                    self.photo_label.setPixmap(pixmap)
+                elif self.photo_label:
+                    self.photo_label.setText("No Photo")
+            else:
+                QMessageBox.warning(self, "Error", "Guardian record not found.")
+
+        except Exception as e:
+            print(f"Error loading guardian data: {e}")
+            QMessageBox.critical(self, "Database Error", f"Failed to load guardian data: {str(e)}")
 
     def go_to_offenseinfo(self):
         self.switch_to_offense.emit()
@@ -883,6 +1300,29 @@ class CaseOffenseInfo(QWidget):
         uic.loadUi("ui/casefile-offenseinfo.ui", self.offense_widget)
         self.offense_widget.move(417, 0)
 
+        # Find all labels
+        self.casenum_label = self.offense_widget.findChild(QLabel, "casenum_label")
+        self.casenum_display = self.offense_widget.findChild(QLabel, "casenum")
+        self.offensetype_label = self.offense_widget.findChild(QLabel, "offensetype")
+        self.dateandtime_label = self.offense_widget.findChild(QLabel, "dateandtime")
+        self.location_label = self.offense_widget.findChild(QLabel, "location")
+        self.officer_label = self.offense_widget.findChild(QLabel, "officer")
+        self.complainant_label = self.offense_widget.findChild(QLabel, "complainant")
+        self.description_label = self.offense_widget.findChild(QLabel, "description")
+        
+        # Create image label for facial photo
+        self.photo_label = QLabel(self.offense_widget)
+        self.photo_label.setGeometry(775, 70, 150, 150)
+        self.photo_label.setStyleSheet("""
+            QLabel {
+                border: 2px solid #3E2780;
+                border-radius: 10px;
+                background-color: #f0f0f0;
+            }
+        """)
+        self.photo_label.setScaledContents(True)
+        self.photo_label.setAlignment(Qt.AlignCenter)
+
         # next button
         self.next_btn = self.offense_widget.findChild(QPushButton, "next_button")
         if self.next_btn:
@@ -897,6 +1337,72 @@ class CaseOffenseInfo(QWidget):
         self.close_btn = self.offense_widget.findChild(QPushButton, "close_btn")
         if self.close_btn:
             self.close_btn.clicked.connect(self.go_to_recordlist)
+            
+        self.current_case_no = None
+
+    def load_case_data(self, case_no):
+        """Load offense data from database based on case number"""
+        self.current_case_no = case_no
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                SELECT 
+                    oi.offns_case_record_no,
+                    oi.offns_type,
+                    oi.offns_date_time,
+                    oi.offns_location,
+                    oi.offns_barangay_officer_in_charge,
+                    oi.offns_complainant,
+                    oi.offns_description,
+                    fd.face_image
+                FROM offense_information oi
+                LEFT JOIN juvenile_profile jp ON oi.juv_id = jp.juv_id
+                LEFT JOIN facial_data fd ON jp.juv_id = fd.juv_id
+                WHERE oi.offns_case_record_no = %s
+            """, (case_no,))
+
+            result = cursor.fetchone()
+            cursor.close()
+            conn.close()
+
+            if result:
+                case_num, offense_type, datetime_val, location, officer, complainant, description, face_image = result
+                
+                datetime_formatted = datetime_val.strftime("%B %d, %Y %I:%M %p") if datetime_val else "N/A"
+                
+                if self.casenum_label:
+                    self.casenum_label.setText(f"Case No. {case_num or 'N/A'}")
+                if self.casenum_display:
+                    self.casenum_display.setText(case_num or "N/A")
+                if self.offensetype_label:
+                    self.offensetype_label.setText(offense_type or "N/A")
+                if self.dateandtime_label:
+                    self.dateandtime_label.setText(datetime_formatted)
+                if self.location_label:
+                    self.location_label.setText(location or "N/A")
+                if self.officer_label:
+                    self.officer_label.setText(officer or "N/A")
+                if self.complainant_label:
+                    self.complainant_label.setText(complainant or "N/A")
+                if self.description_label:
+                    self.description_label.setText(description or "N/A")
+                
+                # Display facial image
+                if face_image and self.photo_label:
+                    from PyQt5.QtGui import QPixmap
+                    pixmap = QPixmap()
+                    pixmap.loadFromData(face_image)
+                    self.photo_label.setPixmap(pixmap)
+                elif self.photo_label:
+                    self.photo_label.setText("No Photo")
+            else:
+                QMessageBox.warning(self, "Error", "Offense record not found.")
+
+        except Exception as e:
+            print(f"Error loading offense data: {e}")
+            QMessageBox.critical(self, "Database Error", f"Failed to load offense data: {str(e)}")
 
     def go_to_history(self):
         self.switch_to_history.emit()
@@ -946,6 +1452,22 @@ class CaseCriminalHistory(QWidget):
         uic.loadUi("ui/casefile-criminalhistory.ui", self.history_widget)
         self.history_widget.move(417, 0)
 
+        # Find labels
+        self.casenum_label = self.history_widget.findChild(QLabel, "casenum_label")
+        
+        # Create image label for facial photo
+        self.photo_label = QLabel(self.history_widget)
+        self.photo_label.setGeometry(775, 70, 150, 150)
+        self.photo_label.setStyleSheet("""
+            QLabel {
+                border: 2px solid #3E2780;
+                border-radius: 10px;
+                background-color: #f0f0f0;
+            }
+        """)
+        self.photo_label.setScaledContents(True)
+        self.photo_label.setAlignment(Qt.AlignCenter)
+        
         #criminal history record table
         self.history_table = self.history_widget.findChild(QTableWidget, "history_table")
         if self.history_table:
@@ -964,6 +1486,81 @@ class CaseCriminalHistory(QWidget):
         self.close_btn = self.history_widget.findChild(QPushButton, "close_btn")
         if self.close_btn:
             self.close_btn.clicked.connect(self.go_to_recordlist)
+            
+        self.current_case_no = None
+
+    def load_case_data(self, case_no):
+        """Load criminal history from database based on case number"""
+        self.current_case_no = case_no
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            # Get the juv_id and face image first
+            cursor.execute("""
+                SELECT jp.juv_id, oi.offns_case_record_no, fd.face_image
+                FROM juvenile_profile jp
+                LEFT JOIN offense_information oi ON jp.juv_id = oi.juv_id
+                LEFT JOIN facial_data fd ON jp.juv_id = fd.juv_id
+                WHERE oi.offns_case_record_no = %s
+            """, (case_no,))
+
+            result = cursor.fetchone()
+            if not result:
+                cursor.close()
+                conn.close()
+                QMessageBox.warning(self, "Error", "Case record not found.")
+                return
+                
+            juv_id, case_num, face_image = result
+            
+            # Update case number label
+            if self.casenum_label:
+                self.casenum_label.setText(f"Case No. {case_num or 'N/A'}")
+            
+            # Display facial image
+            if face_image and self.photo_label:
+                from PyQt5.QtGui import QPixmap
+                pixmap = QPixmap()
+                pixmap.loadFromData(face_image)
+                self.photo_label.setPixmap(pixmap)
+            elif self.photo_label:
+                self.photo_label.setText("No Photo")
+            
+            # Get all offenses for this juvenile
+            cursor.execute("""
+                SELECT 
+                    oi.offns_case_record_no,
+                    oi.offns_date_time,
+                    oi.offns_type
+                FROM offense_information oi
+                WHERE oi.juv_id = %s
+                ORDER BY oi.offns_date_time DESC
+            """, (juv_id,))
+
+            offenses = cursor.fetchall()
+            cursor.close()
+            conn.close()
+
+            # Populate table
+            if self.history_table:
+                self.history_table.setRowCount(len(offenses))
+                for row, offense in enumerate(offenses):
+                    offense_case_no, offense_date, offense_type = offense
+                    
+                    # Case Number
+                    self.history_table.setItem(row, 0, QTableWidgetItem(offense_case_no or "N/A"))
+                    
+                    # Date
+                    date_str = offense_date.strftime("%B %d, %Y") if offense_date else "N/A"
+                    self.history_table.setItem(row, 1, QTableWidgetItem(date_str))
+                    
+                    # Offense Type
+                    self.history_table.setItem(row, 2, QTableWidgetItem(offense_type or "N/A"))
+
+        except Exception as e:
+            print(f"Error loading criminal history: {e}")
+            QMessageBox.critical(self, "Database Error", f"Failed to load criminal history: {str(e)}")
 
     def go_to_offense(self):
         self.switch_to_offense.emit()
