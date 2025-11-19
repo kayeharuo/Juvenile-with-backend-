@@ -145,8 +145,14 @@ class FaceScan(QWidget):
         self.face_detected = False
 
     def start_camera(self):
-        if self.cap is not None:
+        if self.cap is not None and self.cap.isOpened():
+            print("Camera already running")
             return  # Camera already running
+        
+        # Release any existing camera first
+        if self.cap is not None:
+            self.cap.release()
+            self.cap = None
         
         # Prioritize using webcam for face scan if plugged in
         camera_indices = [1, 2, 0]
@@ -182,12 +188,29 @@ class FaceScan(QWidget):
         if self.status_label:
             self.status_label.setText("Position your face at the center for face scan")
 
+    def stop_camera(self):
+        print("Stopping camera...")
+        if self.timer.isActive():
+            self.timer.stop()
+        
+        if self.cap is not None:
+            self.cap.release()
+            self.cap = None
+        
+        print("Camera stopped and released")
+
     def update_frame(self):
-        if self.cap is None:
+        if self.cap is None or not self.cap.isOpened():
             return
             
         ret, frame = self.cap.read()
-        if not ret:
+        if not ret or frame is None:
+            print("Failed to read frame")
+            return
+        
+        # Validate frame
+        if frame.size == 0:
+            print("Empty frame received")
             return
 
         # Convert to grayscale for detection
@@ -215,6 +238,10 @@ class FaceScan(QWidget):
                 self.face_detected = True
                 # Perform recognition
                 match_found, juv_id = self.recognize_face(frame)
+                
+                # IMPORTANT: Stop camera before emitting signal
+                self.stop_camera()
+                
                 if match_found:
                     if self.status_label:
                         self.status_label.setText("Biometric match detected. Adding new offense to profile...")
@@ -223,7 +250,7 @@ class FaceScan(QWidget):
                     if self.status_label:
                         self.status_label.setText("No biometric match detected. Proceeding to enrollment...")
                     QTimer.singleShot(2000, lambda: self.recognition_completed.emit(False, None))
-                self.timer.stop()
+                return  # Stop processing after recognition
         else:
             if self.face_detected:
                 self.face_detected = False
@@ -255,8 +282,21 @@ class FaceScan(QWidget):
             if self.status_label:
                 self.status_label.setText("Processing face recognition...")
             
+            # Validate frame
+            if frame is None or frame.size == 0:
+                print("Invalid frame for recognition")
+                return False, None
+            
+            # Ensure frame is uint8
+            if frame.dtype != np.uint8:
+                frame = frame.astype(np.uint8)
+            
             # Convert BGR to RGB
             rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            
+            # Double-check RGB frame
+            if rgb_frame.dtype != np.uint8:
+                rgb_frame = rgb_frame.astype(np.uint8)
             
             # Get face encodings
             face_encodings = face_recognition.face_encodings(rgb_frame)
@@ -316,9 +356,13 @@ class FaceScan(QWidget):
             traceback.print_exc()
             return False, None
 
+    def hideEvent(self, event):
+        self.stop_camera()
+        super().hideEvent(event)
+
     def closeEvent(self, event):
-        if self.cap:
-            self.cap.release()
+        if self.facescan is not None:
+            self.facescan.stop_camera()
         super().closeEvent(event)
 
     def load_fonts(self):
