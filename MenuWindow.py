@@ -97,6 +97,12 @@ class SystemMenu(QMainWindow):
         self.stacked_widget.show()
         self.stacked_widget.setCurrentWidget(self.facescan)
 
+    #CORRECT LOCATION - closeEvent for SystemMenu class
+    def closeEvent(self, event):
+        if self.facescan is not None:
+            self.facescan.stop_camera()
+        super().closeEvent(event)
+
     def load_fonts(self):
         # Poppins
         if QFontDatabase.addApplicationFont("assets/fonts/Poppins-Regular.ttf") != -1:
@@ -115,6 +121,7 @@ class SystemMenu(QMainWindow):
             print("Inter font loaded successfully.")
         else:
             print("Failed to load Inter font.")
+
 
 class FaceScan(QWidget):
     recognition_completed = pyqtSignal(bool, object)  # match_found, juv_id
@@ -212,6 +219,9 @@ class FaceScan(QWidget):
         if frame.size == 0:
             print("Empty frame received")
             return
+        
+        #Ensure frame is contiguous in memory
+        frame = np.ascontiguousarray(frame)
 
         # Convert to grayscale for detection
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -291,8 +301,16 @@ class FaceScan(QWidget):
             if frame.dtype != np.uint8:
                 frame = frame.astype(np.uint8)
             
+            #Ensure frame is C-contiguous
+            if not frame.flags['C_CONTIGUOUS']:
+                frame = np.ascontiguousarray(frame)
+            
             # Convert BGR to RGB
             rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            
+            #Ensure RGB frame is also C-contiguous
+            if not rgb_frame.flags['C_CONTIGUOUS']:
+                rgb_frame = np.ascontiguousarray(rgb_frame)
             
             # Double-check RGB frame
             if rgb_frame.dtype != np.uint8:
@@ -361,8 +379,7 @@ class FaceScan(QWidget):
         super().hideEvent(event)
 
     def closeEvent(self, event):
-        if self.facescan is not None:
-            self.facescan.stop_camera()
+        self.stop_camera()
         super().closeEvent(event)
 
     def load_fonts(self):
@@ -383,6 +400,7 @@ class FaceScan(QWidget):
             print("Inter font loaded successfully.")
         else:
             print("Failed to load Inter font.")
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
