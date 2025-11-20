@@ -1482,6 +1482,11 @@ class CaseCriminalHistory(QWidget):
         if self.prev_btn:
             self.prev_btn.clicked.connect(self.go_to_offense)
 
+        # done button (hide it in view-only mode)
+        self.done_btn = self.history_widget.findChild(QPushButton, "done_btn")
+        if self.done_btn:
+            self.done_btn.setVisible(False)
+
         # close button
         self.close_btn = self.history_widget.findChild(QPushButton, "close_btn")
         if self.close_btn:
