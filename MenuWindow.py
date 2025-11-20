@@ -97,6 +97,12 @@ class SystemMenu(QMainWindow):
         self.stacked_widget.show()
         self.stacked_widget.setCurrentWidget(self.facescan)
 
+    #CORRECT LOCATION - closeEvent for SystemMenu class
+    def closeEvent(self, event):
+        if self.facescan is not None:
+            self.facescan.stop_camera()
+        super().closeEvent(event)
+
     def load_fonts(self):
         # Poppins
         if QFontDatabase.addApplicationFont("assets/fonts/Poppins-Regular.ttf") != -1:
@@ -115,6 +121,7 @@ class SystemMenu(QMainWindow):
             print("Inter font loaded successfully.")
         else:
             print("Failed to load Inter font.")
+
 
 class FaceScan(QWidget):
     recognition_completed = pyqtSignal(bool, object)  # match_found, juv_id
@@ -145,8 +152,14 @@ class FaceScan(QWidget):
         self.face_detected = False
 
     def start_camera(self):
-        if self.cap is not None:
+        if self.cap is not None and self.cap.isOpened():
+            print("Camera already running")
             return  # Camera already running
+        
+        # Release any existing camera first
+        if self.cap is not None:
+            self.cap.release()
+            self.cap = None
         
         # Prioritize using webcam for face scan if plugged in
         camera_indices = [1, 2, 0]
@@ -182,13 +195,33 @@ class FaceScan(QWidget):
         if self.status_label:
             self.status_label.setText("Position your face at the center for face scan")
 
+    def stop_camera(self):
+        print("Stopping camera...")
+        if self.timer.isActive():
+            self.timer.stop()
+        
+        if self.cap is not None:
+            self.cap.release()
+            self.cap = None
+        
+        print("Camera stopped and released")
+
     def update_frame(self):
-        if self.cap is None:
+        if self.cap is None or not self.cap.isOpened():
             return
             
         ret, frame = self.cap.read()
-        if not ret:
+        if not ret or frame is None:
+            print("Failed to read frame")
             return
+        
+        # Validate frame
+        if frame.size == 0:
+            print("Empty frame received")
+            return
+        
+        #Ensure frame is contiguous in memory
+        frame = np.ascontiguousarray(frame)
 
         # Convert to grayscale for detection
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -215,6 +248,10 @@ class FaceScan(QWidget):
                 self.face_detected = True
                 # Perform recognition
                 match_found, juv_id = self.recognize_face(frame)
+                
+                # IMPORTANT: Stop camera before emitting signal
+                self.stop_camera()
+                
                 if match_found:
                     if self.status_label:
                         self.status_label.setText("Biometric match detected. Adding new offense to profile...")
@@ -223,7 +260,7 @@ class FaceScan(QWidget):
                     if self.status_label:
                         self.status_label.setText("No biometric match detected. Proceeding to enrollment...")
                     QTimer.singleShot(2000, lambda: self.recognition_completed.emit(False, None))
-                self.timer.stop()
+                return  # Stop processing after recognition
         else:
             if self.face_detected:
                 self.face_detected = False
@@ -255,8 +292,29 @@ class FaceScan(QWidget):
             if self.status_label:
                 self.status_label.setText("Processing face recognition...")
             
+            # Validate frame
+            if frame is None or frame.size == 0:
+                print("Invalid frame for recognition")
+                return False, None
+            
+            # Ensure frame is uint8
+            if frame.dtype != np.uint8:
+                frame = frame.astype(np.uint8)
+            
+            #Ensure frame is C-contiguous
+            if not frame.flags['C_CONTIGUOUS']:
+                frame = np.ascontiguousarray(frame)
+            
             # Convert BGR to RGB
             rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            
+            #Ensure RGB frame is also C-contiguous
+            if not rgb_frame.flags['C_CONTIGUOUS']:
+                rgb_frame = np.ascontiguousarray(rgb_frame)
+            
+            # Double-check RGB frame
+            if rgb_frame.dtype != np.uint8:
+                rgb_frame = rgb_frame.astype(np.uint8)
             
             # Get face encodings
             face_encodings = face_recognition.face_encodings(rgb_frame)
@@ -316,9 +374,12 @@ class FaceScan(QWidget):
             traceback.print_exc()
             return False, None
 
+    def hideEvent(self, event):
+        self.stop_camera()
+        super().hideEvent(event)
+
     def closeEvent(self, event):
-        if self.cap:
-            self.cap.release()
+        self.stop_camera()
         super().closeEvent(event)
 
     def load_fonts(self):
@@ -339,6 +400,7 @@ class FaceScan(QWidget):
             print("Inter font loaded successfully.")
         else:
             print("Failed to load Inter font.")
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

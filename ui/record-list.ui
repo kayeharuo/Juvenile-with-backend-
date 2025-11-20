@@ -161,6 +161,18 @@ QListWidget::item:hover QPushButton {
 background-color: #3E2780;
 color: white;
 }
+
+QScrollBar:vertical {
+    border: 1px solid #d9d9d9;
+    background-color: #f1f1f1;
+    height: 10px;
+}
+
+QScrollBar::handle:vertical {
+    background-color: #d9d9d9;
+    min-width: 30px;
+    border-radius: 5px;
+}
 </string>
     </property>
    </widget>

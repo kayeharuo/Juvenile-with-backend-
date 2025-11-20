@@ -918,8 +918,27 @@ class FaceScan(QDialog):
             if self.status_label:
                 self.status_label.setText("Processing face... Please wait.")
 
-            # Convert BGR to RGB
+            # Validate frame FIRST
+            if frame is None or frame.size == 0:
+                print("Invalid frame: empty or None")
+                return None
+            
+            # Ensure frame is in correct format (uint8)
+            if frame.dtype != np.uint8:
+                print(f"Converting frame from {frame.dtype} to uint8")
+                frame = frame.astype(np.uint8)
+            
+            # Ensure frame has 3 channels (BGR)
+            if len(frame.shape) != 3 or frame.shape[2] != 3:
+                print(f"Invalid frame shape: {frame.shape}")
+                return None
+
+            # Convert BGR to RGB (OpenCV uses BGR, face_recognition needs RGB)
             rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            
+            # Double-check RGB frame
+            if rgb_frame.dtype != np.uint8:
+                rgb_frame = rgb_frame.astype(np.uint8)
 
             # Get face encodings (128-dimension vector)
             face_encodings = face_recognition.face_encodings(rgb_frame)
@@ -939,7 +958,7 @@ class FaceScan(QDialog):
             import traceback
             traceback.print_exc()
             return None
-
+        
     def closeEvent(self, event):
         if self.cap:
             self.cap.release()
