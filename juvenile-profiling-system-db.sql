@@ -97,7 +97,8 @@ CREATE TABLE public.users (
         FOREIGN KEY (admin_id) REFERENCES barangay_admin(admin_id)
 );
 
-
+-- Enable pgcrypto extension for password hashing
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 -- Insert a sample authorization key (hashed for security)
 INSERT INTO authorization_key (auth_key)
 VALUES (crypt('authorization_key_12345', gen_salt('bf')));
