@@ -71,8 +71,7 @@ class DbMenuWindow(QMainWindow):
         self.stacked_widget.setCurrentWidget(self.dbmenu)
 
     def records_page(self):
-        self.records.load_records_from_db()  # Load records from database
-        # Clear the search box when returning to records page
+        self.records.load_records_from_db(filter_juv_id=None)
         if self.records.search_line:
             self.records.search_line.clear()
         self.stacked_widget.setCurrentWidget(self.records)
@@ -111,13 +110,24 @@ class DbMenuWindow(QMainWindow):
         self.stacked_widget.setCurrentWidget(self.case_crimehistory)
 
     #helper method to show the record page after user submits or enroll a new profile
-    def show_page(self, page_name: str):
+    def show_page(self, page_name: str, filter_juv_id=None):
         pages = {
             "menu": self.dbmenu,
             "records": self.records,
         }
 
         if page_name in pages:
+            if page_name == "records":
+                # Load records with optional filter
+                if filter_juv_id:
+                    self.records.load_records_from_db(filter_juv_id=filter_juv_id)
+                else:
+                    self.records.load_records_from_db()
+                
+                # Clear the search box when showing records page
+                if self.records.search_line:
+                    self.records.search_line.clear()
+            
             self.stacked_widget.setCurrentWidget(pages[page_name])
 
     def load_fonts(self):
@@ -773,8 +783,7 @@ class DashboardRecords(QWidget):
     def go_to_dbmenu(self):
         self.switch_to_dbmenu.emit()
 
-    def load_records_from_db(self):
-        """Load all juvenile records from the database"""
+    def load_records_from_db(self, filter_juv_id=None):
         try:
             # Clear existing items
             self.list_widget.clear()
@@ -784,17 +793,33 @@ class DashboardRecords(QWidget):
             cursor = conn.cursor()
 
             # Query to get juvenile records with their offense information
-            cursor.execute("""
-                SELECT 
-                    jp.juv_lname, 
-                    jp.juv_fname, 
-                    jp.juv_mname,
-                    oi.offns_case_record_no,
-                    oi.offns_date_time
-                FROM juvenile_profile jp
-                LEFT JOIN offense_information oi ON jp.juv_id = oi.juv_id
-                ORDER BY oi.offns_date_time DESC
-            """)
+            if filter_juv_id:
+                # Filter by specific juvenile
+                cursor.execute("""
+                    SELECT 
+                        jp.juv_lname, 
+                        jp.juv_fname, 
+                        jp.juv_mname,
+                        oi.offns_case_record_no,
+                        oi.offns_date_time
+                    FROM juvenile_profile jp
+                    LEFT JOIN offense_information oi ON jp.juv_id = oi.juv_id
+                    WHERE jp.juv_id = %s
+                    ORDER BY oi.offns_date_time DESC
+                """, (filter_juv_id,))
+            else:
+                # Load all records
+                cursor.execute("""
+                    SELECT 
+                        jp.juv_lname, 
+                        jp.juv_fname, 
+                        jp.juv_mname,
+                        oi.offns_case_record_no,
+                        oi.offns_date_time
+                    FROM juvenile_profile jp
+                    LEFT JOIN offense_information oi ON jp.juv_id = oi.juv_id
+                    ORDER BY oi.offns_date_time DESC
+                """)
 
             records = cursor.fetchall()
             cursor.close()
@@ -834,7 +859,6 @@ class DashboardRecords(QWidget):
             QMessageBox.critical(self, "Database Error", f"Failed to load records: {str(e)}")
 
     def filter_records(self):
-        """Filter records based on search text"""
         search_text = self.search_line.text().lower().strip()
         
         # Clear the list
@@ -993,7 +1017,7 @@ class CasePersonalInfo(QWidget):
         self.current_case_no = None
 
     def load_case_data(self, case_no):
-        """Load juvenile data from database based on case number"""
+        #Load juvenile data from database based on case number
         self.current_case_no = case_no
         try:
             conn = get_db_connection()
@@ -1173,7 +1197,7 @@ class CaseParentInfo(QWidget):
         self.current_case_no = None
 
     def load_case_data(self, case_no):
-        """Load guardian data from database based on case number"""
+        #Load guardian data from database based on case number
         self.current_case_no = case_no
         try:
             conn = get_db_connection()
@@ -1341,7 +1365,7 @@ class CaseOffenseInfo(QWidget):
         self.current_case_no = None
 
     def load_case_data(self, case_no):
-        """Load offense data from database based on case number"""
+        #Load offense data from database based on case number
         self.current_case_no = case_no
         try:
             conn = get_db_connection()
@@ -1482,11 +1506,6 @@ class CaseCriminalHistory(QWidget):
         if self.prev_btn:
             self.prev_btn.clicked.connect(self.go_to_offense)
 
-        # done button (hide it in view-only mode)
-        self.done_btn = self.history_widget.findChild(QPushButton, "done_btn")
-        if self.done_btn:
-            self.done_btn.setVisible(False)
-
         # close button
         self.close_btn = self.history_widget.findChild(QPushButton, "close_btn")
         if self.close_btn:
@@ -1495,7 +1514,7 @@ class CaseCriminalHistory(QWidget):
         self.current_case_no = None
 
     def load_case_data(self, case_no):
-        """Load criminal history from database based on case number"""
+        #Load criminal history from database based on case number
         self.current_case_no = case_no
         try:
             conn = get_db_connection()

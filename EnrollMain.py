@@ -66,13 +66,15 @@ class EnrollmentData:
             'image': None,
             'embedding': None
         }
+        
+        # Store JUV_ID after enrollment
+        self.juv_id = None
 
     def reset_facial_only(self):
         self.facial_data = {
             'image': None,
             'embedding': None
         }
-
 
 class Enroll(QMainWindow):
     def __init__(self):
@@ -177,7 +179,12 @@ class Enroll(QMainWindow):
         from DashboardMenu import DbMenuWindow as RecordWindow
         self.main_window = RecordWindow()
 
-        self.main_window.show_page("records")
+        # Pass the juv_id to filter records
+        if hasattr(self.enrollment_data, 'juv_id') and self.enrollment_data.juv_id:
+            self.main_window.show_page("records", filter_juv_id=self.enrollment_data.juv_id)
+        else:
+            self.main_window.show_page("records")
+        
         self.main_window.show()
         self.close()
 
@@ -195,8 +202,8 @@ class Enroll(QMainWindow):
             cursor.execute("""
                 INSERT INTO JUVENILE_PROFILE 
                 (JUV_LNAME, JUV_FNAME, JUV_MNAME, JUV_SUFFIX, JUV_SEX, JUV_GENDER, 
-                 JUV_AGE, JUV_DOB, JUV_PLACE_OF_BIRTH, JUV_CITIZENSHIP, 
-                 JUV_STATE_PROVINCE, JUV_MUNICIPALITY, JUV_BARANGAY, JUV_STREET)
+                JUV_AGE, JUV_DOB, JUV_PLACE_OF_BIRTH, JUV_CITIZENSHIP, 
+                JUV_STATE_PROVINCE, JUV_MUNICIPALITY, JUV_BARANGAY, JUV_STREET)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING JUV_ID
             """, (
@@ -217,13 +224,16 @@ class Enroll(QMainWindow):
             ))
 
             juv_id = cursor.fetchone()[0]
+            
+            # Store juv_id in enrollment_data for later use
+            self.enrollment_data.juv_id = juv_id
 
             # Insert into JUVENILE_GUARDIAN_PROFILE
             cursor.execute("""
                 INSERT INTO JUVENILE_GUARDIAN_PROFILE 
                 (GRDN_FULL_NAME, GRDN_JUV_RELATIONSHIP, GRDN_SEX, GRDN_DOB, GRDN_AGE, 
-                 GRDN_CIVIL_STATUS, GRDN_CITIZENSHIP, GRDN_OCCUPATION, GRDN_EMAIL_ADDRESS, 
-                 GRDN_CONTACT_NO, GRDN_RESIDENTIAL_ADDRESS, JUV_ID)
+                GRDN_CIVIL_STATUS, GRDN_CITIZENSHIP, GRDN_OCCUPATION, GRDN_EMAIL_ADDRESS, 
+                GRDN_CONTACT_NO, GRDN_RESIDENTIAL_ADDRESS, JUV_ID)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (
                 self.enrollment_data.parent_info['fullname'],
@@ -244,7 +254,7 @@ class Enroll(QMainWindow):
             cursor.execute("""
                 INSERT INTO OFFENSE_INFORMATION 
                 (OFFNS_TYPE, OFFNS_CASE_RECORD_NO, OFFNS_DATE_TIME, OFFNS_LOCATION, 
-                 OFFNS_DESCRIPTION, OFFNS_COMPLAINANT, OFFNS_BARANGAY_OFFICER_IN_CHARGE, JUV_ID)
+                OFFNS_DESCRIPTION, OFFNS_COMPLAINANT, OFFNS_BARANGAY_OFFICER_IN_CHARGE, JUV_ID)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """, (
                 self.enrollment_data.offense_info['offense_type'],
@@ -272,12 +282,10 @@ class Enroll(QMainWindow):
             cursor.close()
             conn.close()
 
-            # Reset all data after successful save
-            self.enrollment_data.reset()
-
             # Show success message
             QMessageBox.information(self, "Success", "Record successfully saved to database!")
 
+            # Note: Don't reset here - we need juv_id for filtering
 
         except Exception as e:
             QMessageBox.critical(self, "Database Error", f"Failed to save data: {str(e)}")
