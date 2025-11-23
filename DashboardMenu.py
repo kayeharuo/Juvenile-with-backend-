@@ -20,6 +20,12 @@ class DbMenuWindow(QMainWindow):
         uic.loadUi("ui/dbmenu-stack.ui", self.stacked_widget)
         self.stacked_widget.move(0, 0)
 
+        # Store selected case number
+        self.selected_case_no = None
+        
+        # Track if we're in filtered mode (from enrollment)
+        self.filtered_juv_id = None
+
         #pyqt signals
         self.dbmenu = DashboardMenu()
         self.dbmenu.switch_to_records.connect(self.records_page)
@@ -38,24 +44,17 @@ class DbMenuWindow(QMainWindow):
 
         self.case_personalinfo = CasePersonalInfo()
         self.case_personalinfo.switch_to_parentinfo.connect(self.case_parentpage)
-        self.case_personalinfo.close_page.connect(self.records_page)
-        
-        # Store selected case number
-        self.selected_case_no = None
 
         self.case_parentinfo = CaseParentInfo()
         self.case_parentinfo.switch_to_offense.connect(self.case_offensepage)
         self.case_parentinfo.switch_to_personal.connect(self.case_personalpage)
-        self.case_parentinfo.close_page.connect(self.records_page)
 
         self.case_offenseinfo = CaseOffenseInfo()
         self.case_offenseinfo.switch_to_history.connect(self.case_historypage)
         self.case_offenseinfo.switch_to_parent.connect(self.case_parentpage)
-        self.case_offenseinfo.close_page.connect(self.records_page)
 
         self.case_crimehistory = CaseCriminalHistory()
         self.case_crimehistory.switch_to_offense.connect(self.case_offensepage)
-        self.case_crimehistory.close_page.connect(self.records_page)
 
         #add instances to the stacked widget
         self.stacked_widget.addWidget(self.dbmenu)
@@ -71,6 +70,8 @@ class DbMenuWindow(QMainWindow):
         self.stacked_widget.setCurrentWidget(self.dbmenu)
 
     def records_page(self):
+        # Clear filter when navigating normally from dashboard menu
+        self.filtered_juv_id = None
         self.records.load_records_from_db(filter_juv_id=None)
         if self.records.search_line:
             self.records.search_line.clear()
@@ -109,7 +110,6 @@ class DbMenuWindow(QMainWindow):
             self.case_crimehistory.load_case_data(self.selected_case_no)
         self.stacked_widget.setCurrentWidget(self.case_crimehistory)
 
-    #helper method to show the record page after user submits or enroll a new profile
     def show_page(self, page_name: str, filter_juv_id=None):
         pages = {
             "menu": self.dbmenu,
@@ -118,6 +118,9 @@ class DbMenuWindow(QMainWindow):
 
         if page_name in pages:
             if page_name == "records":
+                # Store the filter
+                self.filtered_juv_id = filter_juv_id
+                
                 # Load records with optional filter
                 if filter_juv_id:
                     self.records.load_records_from_db(filter_juv_id=filter_juv_id)
@@ -129,6 +132,21 @@ class DbMenuWindow(QMainWindow):
                     self.records.search_line.clear()
             
             self.stacked_widget.setCurrentWidget(pages[page_name])
+
+    def records_page_unfiltered(self):
+        """Navigate to records page - respects filter if set, otherwise shows all"""
+        # Check if we have a filter active
+        if self.filtered_juv_id:
+            # Keep the filter (we're coming back from viewing a case while in filtered mode)
+            self.records.load_records_from_db(filter_juv_id=self.filtered_juv_id)
+        else:
+            # No filter, show all records (normal navigation)
+            self.records.load_records_from_db(filter_juv_id=None)
+        
+        # Clear the search box when returning to records page
+        if self.records.search_line:
+            self.records.search_line.clear()
+        self.stacked_widget.setCurrentWidget(self.records)
 
     def load_fonts(self):
         # Poppins
@@ -148,7 +166,7 @@ class DbMenuWindow(QMainWindow):
             print("Inter font loaded successfully.")
         else:
             print("Failed to load Inter font.")
-
+            
 class DashboardMenu(QWidget):
     switch_to_records = pyqtSignal()
     switch_to_settings = pyqtSignal()
@@ -961,7 +979,7 @@ class DashboardRecords(QWidget):
 #from here, this is when user clicks on a specific case record
 class CasePersonalInfo(QWidget):
     switch_to_parentinfo = pyqtSignal()
-    close_page = pyqtSignal()
+    
 
     def __init__(self, parent=None):
         super().__init__()
@@ -1008,13 +1026,18 @@ class CasePersonalInfo(QWidget):
         if self.next_btn:
             self.next_btn.clicked.connect(self.go_to_parentinfo)
 
-        # close button
+        # close button - Updated to use unfiltered records page
         self.close_btn = self.personal_widget.findChild(QPushButton, "close_btn")
         if self.close_btn:
-            self.close_btn.clicked.connect(self.go_to_recordlist)
+            self.close_btn.clicked.connect(self.go_to_recordlist_unfiltered)
             
         # Store current case number
         self.current_case_no = None
+    
+    def go_to_recordlist_unfiltered(self):
+        parent_window = self.window()
+        if hasattr(parent_window, 'records_page_unfiltered'):
+            parent_window.records_page_unfiltered()
 
     def load_case_data(self, case_no):
         #Load juvenile data from database based on case number
@@ -1108,8 +1131,6 @@ class CasePersonalInfo(QWidget):
     def go_to_parentinfo(self):
         self.switch_to_parentinfo.emit()
 
-    def go_to_recordlist(self):
-        self.close_page.emit()
 
     def load_fonts(self):
         # Poppins
@@ -1134,7 +1155,7 @@ class CasePersonalInfo(QWidget):
 class CaseParentInfo(QWidget):
     switch_to_offense = pyqtSignal()
     switch_to_personal = pyqtSignal()
-    close_page = pyqtSignal()
+    
 
     def __init__(self, parent=None):
         super().__init__()
@@ -1189,12 +1210,17 @@ class CaseParentInfo(QWidget):
         if self.prev_btn:
             self.prev_btn.clicked.connect(self.go_to_personal)
 
-        # close button
+        # close button - Updated to use unfiltered records page
         self.close_btn = self.parent_widget.findChild(QPushButton, "close_btn")
         if self.close_btn:
-            self.close_btn.clicked.connect(self.go_to_recordlist)
+            self.close_btn.clicked.connect(self.go_to_recordlist_unfiltered)
             
         self.current_case_no = None
+    
+    def go_to_recordlist_unfiltered(self):
+        parent_window = self.window()
+        if hasattr(parent_window, 'records_page_unfiltered'):
+            parent_window.records_page_unfiltered()
 
     def load_case_data(self, case_no):
         #Load guardian data from database based on case number
@@ -1280,8 +1306,6 @@ class CaseParentInfo(QWidget):
     def go_to_personal(self):
         self.switch_to_personal.emit()
 
-    def go_to_recordlist(self):
-        self.close_page.emit()
 
     def load_fonts(self):
         # Poppins
@@ -1306,7 +1330,7 @@ class CaseParentInfo(QWidget):
 class CaseOffenseInfo(QWidget):
     switch_to_history = pyqtSignal()
     switch_to_parent = pyqtSignal()
-    close_page = pyqtSignal()
+    
 
     def __init__(self, parent=None):
         super().__init__()
@@ -1357,12 +1381,17 @@ class CaseOffenseInfo(QWidget):
         if self.prev_btn:
             self.prev_btn.clicked.connect(self.go_to_parent)
 
-        # close button
+        # close button - Updated to use unfiltered records page
         self.close_btn = self.offense_widget.findChild(QPushButton, "close_btn")
         if self.close_btn:
-            self.close_btn.clicked.connect(self.go_to_recordlist)
+            self.close_btn.clicked.connect(self.go_to_recordlist_unfiltered)
             
         self.current_case_no = None
+
+    def go_to_recordlist_unfiltered(self):
+        parent_window = self.window()
+        if hasattr(parent_window, 'records_page_unfiltered'):
+            parent_window.records_page_unfiltered()
 
     def load_case_data(self, case_no):
         #Load offense data from database based on case number
@@ -1434,8 +1463,6 @@ class CaseOffenseInfo(QWidget):
     def go_to_parent(self):
         self.switch_to_parent.emit()
 
-    def go_to_recordlist(self):
-        self.close_page.emit()
 
     def load_fonts(self):
         # Poppins
@@ -1458,7 +1485,7 @@ class CaseOffenseInfo(QWidget):
 
 class CaseCriminalHistory(QWidget):
     switch_to_offense = pyqtSignal()
-    close_page = pyqtSignal()
+    
 
     def __init__(self, parent=None):
         super().__init__()
@@ -1506,12 +1533,17 @@ class CaseCriminalHistory(QWidget):
         if self.prev_btn:
             self.prev_btn.clicked.connect(self.go_to_offense)
 
-        # close button
+        # close button - Updated to use unfiltered records page
         self.close_btn = self.history_widget.findChild(QPushButton, "close_btn")
         if self.close_btn:
-            self.close_btn.clicked.connect(self.go_to_recordlist)
+            self.close_btn.clicked.connect(self.go_to_recordlist_unfiltered)
             
         self.current_case_no = None
+
+    def go_to_recordlist_unfiltered(self):
+        parent_window = self.window()
+        if hasattr(parent_window, 'records_page_unfiltered'):
+            parent_window.records_page_unfiltered()
 
     def load_case_data(self, case_no):
         #Load criminal history from database based on case number
@@ -1589,8 +1621,6 @@ class CaseCriminalHistory(QWidget):
     def go_to_offense(self):
         self.switch_to_offense.emit()
 
-    def go_to_recordlist(self):
-        self.close_page.emit()
 
     def load_fonts(self):
         # Poppins
