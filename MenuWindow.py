@@ -340,7 +340,7 @@ class FaceScan(QWidget):
                 return False, None
             
             # Compare embeddings
-            threshold = 0.6  # face_recognition threshold
+            threshold = 0.4  # face_recognition threshold
             best_match_id = None
             best_distance = float('inf')
             

@@ -560,6 +560,12 @@ padding-left: 20px;</string>
        <height>126</height>
       </rect>
      </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777209</height>
+      </size>
+     </property>
      <property name="styleSheet">
       <string notr="true">border: none;
 background: none;
@@ -573,6 +579,9 @@ padding-left: 20px;</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
     </widget>
    </widget>

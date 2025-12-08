@@ -4,7 +4,6 @@ import os
 import pkg_resources
 
 def check_missing_packages():
-    """Check which packages from requirements.txt are not installed"""
     if not os.path.exists("requirements.txt"):
         return []
     
@@ -28,7 +27,6 @@ def check_missing_packages():
     return missing
 
 def install_requirements():
-    """Install packages from requirements.txt"""
     missing_packages = check_missing_packages()
     
     if not missing_packages:
